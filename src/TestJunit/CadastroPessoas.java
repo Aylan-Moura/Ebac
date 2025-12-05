@@ -1,16 +1,41 @@
-package Streams;
+package TestJunit;
+
+
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
+class Pessoa {
+    private String nome;
+    private String sexo;
+
+    public Pessoa(String nome, String sexo) {
+        this.nome = nome;
+        this.sexo = sexo.toUpperCase();
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public String getSexo() {
+        return sexo;
+    }
+
+    @Override
+    public String toString() {
+        return "Nome: " + nome + ", Sexo: " + sexo;
+    }
+}
 
 public class CadastroPessoas {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
         // Coleções separadas
-        List<Pessoa> homens = new ArrayList<>();
-        List<Pessoa> mulheres = new ArrayList<>();
+        List<Streams.Pessoa> homens = new ArrayList<>();
+        List<Streams.Pessoa> mulheres = new ArrayList<>();
 
         while (true) {
             System.out.print("Digite o nome da pessoa (ou 'sair' para encerrar): ");
@@ -23,7 +48,7 @@ public class CadastroPessoas {
             System.out.print("Digite o sexo da pessoa (M/F): ");
             String sexo = scanner.nextLine();
 
-            Pessoa p = new Pessoa(nome, sexo);
+            Streams.Pessoa p = new Streams.Pessoa(nome, sexo);
 
             // Decide em qual lista guardar
             if (p.getSexo().equalsIgnoreCase("M")) {
@@ -37,18 +62,18 @@ public class CadastroPessoas {
 
 
         System.out.println("\n=== Lista de Homens ===");
-        for (Pessoa h : homens) {
+        for (Streams.Pessoa h : homens) {
             System.out.println(h);
         }
 
         System.out.println("\n=== Lista de Mulheres ===");
-        for (Pessoa m : mulheres) {
+        for (Streams.Pessoa m : mulheres) {
             System.out.println(m);
         }
 
         System.out.println("\n Apenas nomes femininos (com Streams)");
         mulheres.stream()
-                .map(Pessoa::getNome)
+                .map(Streams.Pessoa::getNome)
                 .forEach(System.out::println);
 
 
