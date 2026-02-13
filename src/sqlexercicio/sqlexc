@@ -1,0 +1,53 @@
+CREATE TABLE cliente(
+id_cliente SERIAL PRIMARY KEY,
+nome VARCHAR(100) NOT NULL,
+email VARCHAR(100) UNIQUE NOT NULL
+
+);
+CREATE TABLE produto (
+    id_produto SERIAL PRIMARY KEY,
+    descricao VARCHAR(100) NOT NULL,
+    preco NUMERIC(10,2) NOT NULL
+);
+
+CREATE TABLE nota_fiscal (
+    id_nota SERIAL PRIMARY KEY,
+    id_cliente INT NOT NULL,
+    id_produto INT NOT NULL,
+    data_emissao DATE NOT NULL,
+    quantidade INT NOT NULL,
+
+    CONSTRAINT fk_nota_cliente
+        FOREIGN KEY (id_cliente)
+        REFERENCES cliente(id_cliente),
+
+    CONSTRAINT fk_nota_produto
+        FOREIGN KEY (id_produto)
+        REFERENCES produto(id_produto)
+		);
+
+		INSERT INTO cliente (nome, email) VALUES
+('João Silva', 'joao@email.com'),
+('Maria Souza', 'maria@email.com');
+
+INSERT INTO produto (descricao, preco) VALUES
+('Notebook', 3500.00),
+('Mouse', 80.00);
+
+INSERT INTO nota_fiscal (id_cliente, id_produto, data_emissao, quantidade) VALUES
+(1, 1, '2026-01-19', 1),
+(2, 2, '2026-01-19', 2);
+
+SELECT
+    nf.id_nota,
+    c.nome AS cliente,
+    p.descricao AS produto,
+    nf.quantidade,
+    p.preco,
+    (nf.quantidade * p.preco) AS valor_total,
+    nf.data_emissao
+FROM nota_fiscal nf
+INNER JOIN cliente c ON nf.id_cliente = c.id_cliente
+INNER JOIN produto p ON nf.id_produto = p.id_produto;
+
+

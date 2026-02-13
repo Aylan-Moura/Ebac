@@ -22,6 +22,4 @@ public class Main {
         Pessoa pessoa = new Pessoa("Aylan");
 
 
-        System.out.println("O nome é: " + pessoa.nome);
-    }
-}
+        System.out.println("O nome é: " + pessoa.nome
