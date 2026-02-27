@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Ebac.iml" filepath="$PROJECT_DIR$/Ebac.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/ExercicioModulo32/src/jpa-tdd-postgres.iml" filepath="$PROJECT_DIR$/src/ExercicioModulo32/src/jpa-tdd-postgres.iml" />
     </modules>
   </component>
 </project>
