@@ -1,0 +1,12 @@
+br/com/aylan/dao/ProdutoDaoMock.class
+br/com/aylan/VendaDAOTest.class
+br/com/aylan/jpa/VendaJpaDAOTest.class
+br/com/aylan/ProdutoServiceTest.class
+br/com/aylan/jpa/ClienteJpaDaoTest.class
+br/com/aylan/ClienteDAOTest.class
+br/com/aylan/jpa/ProdutoJpaDAOTest.class
+br/com/aylan/ProdutoDAOTest.class
+br/com/aylan/ClienteServiceTest.class
+br/com/aylan/dao/VendaExclusaoJpaDAO.class
+br/com/aylan/dao/ClienteDaoMock.class
+br/com/aylan/AllTests.class
