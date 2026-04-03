@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Gestão de Produtos</title>
+    <h:outputStylesheet library="css" name="estilo.css"/>
+</h:head>
+
+<h:body>
+
+    <!-- Header -->
+    <div class="header">
+        <span>📦</span>
+        <h1>Gestão de Produtos</h1>
+    </div>
+
+    <h:form id="formPrincipal">
+        <div class="container">
+
+            <!-- ===== COLUNA ESQUERDA: Formulário ===== -->
+            <div>
+
+                <!-- Card Formulário -->
+                <div class="card">
+                    <div class="card-title">
+                        <h:outputText value="✏️ #{produtoBean.modoEdicao ? 'Editar Produto' : 'Novo Produto'}"/>
+                    </div>
+
+                    <!-- Mensagens de feedback -->
+                    <h:messages id="mensagens" layout="table"
+                                infoClass="msg-info"
+                                warnClass="msg-warn"
+                                errorClass="msg-error"
+                                showSummary="true"
+                                showDetail="true"/>
+
+                    <!-- Nome -->
+                    <div class="form-group">
+                        <h:outputLabel for="nome" value="Nome do Produto *"/>
+                        <h:inputText id="nome"
+                                     value="#{produtoBean.produtoSelecionado.nome}"
+                                     required="true"
+                                     requiredMessage="Nome é obrigatório"
+                                     maxlength="100"
+                                     placeholder="Ex: Notebook Dell Inspiron"/>
+                    </div>
+
+                    <!-- Descrição -->
+                    <div class="form-group">
+                        <h:outputLabel for="descricao" value="Descrição"/>
+                        <h:inputTextarea id="descricao"
+                                         value="#{produtoBean.produtoSelecionado.descricao}"
+                                         maxlength="255"
+                                         rows="3"
+                                         placeholder="Descrição opcional do produto"/>
+                    </div>
+
+                    <!-- Preço e Estoque na mesma linha -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <h:outputLabel for="preco" value="Preço (R$) *"/>
+                            <h:inputText id="preco"
+                                         value="#{produtoBean.produtoSelecionado.preco}"
+                                         required="true"
+                                         requiredMessage="Preço é obrigatório"
+                                         placeholder="0.00">
+                                <f:convertNumber minFractionDigits="2"
+                                                 maxFractionDigits="2"
+                                                 type="number"
+                                                 locale="pt_BR"/>
+                            </h:inputText>
+                        </div>
+
+                        <div class="form-group">
+                            <h:outputLabel for="estoque" value="Estoque"/>
+                            <h:inputText id="estoque"
+                                         value="#{produtoBean.produtoSelecionado.estoque}"
+                                         placeholder="0"/>
+                        </div>
+                    </div>
+
+                    <!-- Botões -->
+                    <div class="btn-group">
+                        <h:commandButton value="💾 Salvar"
+                                         styleClass="btn btn-primary"
+                                         action="#{produtoBean.salvar}"
+                                         update="formPrincipal"/>
+
+                        <h:commandButton value="✖ Cancelar"
+                                         styleClass="btn btn-secondary"
+                                         action="#{produtoBean.cancelar}"
+                                         immediate="true"
+                                         update="formPrincipal"/>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== COLUNA DIREITA: Listagem ===== -->
+            <div>
+
+                <!-- Stats -->
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-number">
+                            <h:outputText value="#{produtoBean.totalProdutos}"/>
+                        </div>
+                        <div class="stat-label">Total de Produtos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">
+                            <h:outputText value="#{produtoBean.produtos.size()}"/>
+                        </div>
+                        <div class="stat-label">Exibidos</div>
+                    </div>
+                </div>
+
+                <!-- Card Listagem -->
+                <div class="card">
+                    <div class="card-title">🗂️ Lista de Produtos</div>
+
+                    <!-- Barra de Busca -->
+                    <div class="busca-row">
+                        <h:inputText value="#{produtoBean.termoBusca}"
+                                     placeholder="Buscar por nome..."
+                                     onkeypress="if(event.key==='Enter') document.getElementById('formPrincipal:btnBuscar').click()"/>
+
+                        <h:commandButton id="btnBuscar"
+                                         value="🔍 Buscar"
+                                         styleClass="btn btn-primary"
+                                         action="#{produtoBean.buscar}"
+                                         update="formPrincipal"/>
+
+                        <h:commandButton value="✖"
+                                         styleClass="btn btn-secondary"
+                                         action="#{produtoBean.limparBusca}"
+                                         update="formPrincipal"
+                                         title="Limpar busca"/>
+                    </div>
+
+                    <!-- Tabela de Produtos -->
+                    <div class="tabela-wrapper">
+                        <h:dataTable id="tabelaProdutos"
+                                     value="#{produtoBean.produtos}"
+                                     var="produto"
+                                     rendered="#{not empty produtoBean.produtos}">
+
+                            <h:column>
+                                <f:facet name="header">ID</f:facet>
+                                <h:outputText value="#{produto.id}"/>
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">Nome</f:facet>
+                                <h:outputText value="#{produto.nome}"/>
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">Descrição</f:facet>
+                                <h:outputText value="#{produto.descricao != null ? produto.descricao : '-'}"/>
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">Preço</f:facet>
+                                <h:outputText value="#{produto.preco}">
+                                    <f:convertNumber type="currency"
+                                                     currencySymbol="R$ "
+                                                     minFractionDigits="2"
+                                                     locale="pt_BR"/>
+                                </h:outputText>
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">Estoque</f:facet>
+                                <h:outputText value="#{produto.estoque}"
+                                styleClass="badge-estoque #{produto.estoque == 0 ? 'badge-zero' : (produto.estoque lt 5 ? 'badge-baixo' : 'badge-ok')}"/>
+                            </h:column>
+
+                            <h:column>
+                                <f:facet name="header">Ações</f:facet>
+                                <h:commandButton value="✏️ Editar"
+                                                 styleClass="btn btn-edit"
+                                                 action="#{produtoBean.editar(produto)}"
+                                                 update="formPrincipal"/>
+                                &#160;
+                                <h:commandButton value="🗑 Excluir"
+                                                 styleClass="btn btn-danger"
+                                                 action="#{produtoBean.deletar(produto)}"
+                                                 update="formPrincipal"
+                                                 onclick="return confirm('Deseja excluir o produto: #{produto.nome}?')"/>
+                            </h:column>
+
+                        </h:dataTable>
+
+                        <!-- Estado vazio -->
+                        <h:panelGroup rendered="#{empty produtoBean.produtos}">
+                            <div class="empty-state">
+                                <span>📭</span>
+                                <p>Nenhum produto encontrado.</p>
+                                <small>Cadastre um novo produto usando o formulário ao lado.</small>
+                            </div>
+                        </h:panelGroup>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </h:form>
+
+</h:body>
+</html>
