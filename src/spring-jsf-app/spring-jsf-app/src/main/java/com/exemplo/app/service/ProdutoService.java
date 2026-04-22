@@ -4,6 +4,10 @@ import com.exemplo.app.model.Produto;
 import com.exemplo.app.repository.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,12 +19,21 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ProdutoService {
 
+    private static final int TAMANHO_PADRAO_PAGINA = 10;
+
     private final ProdutoRepository produtoRepository;
 
     @Transactional(readOnly = true)
     public List<Produto> listarTodos() {
         log.debug("Listando todos os produtos");
         return produtoRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Produto> listarPaginado(int pagina, int tamanho) {
+        Pageable pageable = PageRequest.of(pagina, tamanho, Sort.by("id").ascending());
+        log.debug("Listando produtos paginado: pagina={}, tamanho={}", pagina, tamanho);
+        return produtoRepository.findAll(pageable);
     }
 
     @Transactional(readOnly = true)
@@ -33,6 +46,13 @@ public class ProdutoService {
     public List<Produto> buscarPorNome(String nome) {
         log.debug("Buscando produtos por nome: {}", nome);
         return produtoRepository.findByNomeContainingIgnoreCase(nome);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Produto> buscarPorNomePaginado(String nome, int pagina, int tamanho) {
+        Pageable pageable = PageRequest.of(pagina, tamanho, Sort.by("id").ascending());
+        log.debug("Buscando produtos por nome paginado: nome={}, pagina={}", nome, pagina);
+        return produtoRepository.findByNomeContainingIgnoreCase(nome, pageable);
     }
 
     @Transactional

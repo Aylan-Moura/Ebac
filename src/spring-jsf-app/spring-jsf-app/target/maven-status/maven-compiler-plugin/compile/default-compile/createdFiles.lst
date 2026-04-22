@@ -1,0 +1,7 @@
+com/exemplo/app/repository/ProdutoRepository.class
+com/exemplo/app/controller/ProdutoBean.class
+com/exemplo/app/Application.class
+com/exemplo/app/model/Produto$ProdutoBuilder.class
+com/exemplo/app/service/ProdutoService.class
+com/exemplo/app/model/Produto.class
+com/exemplo/app/controller/ProdutoController.class

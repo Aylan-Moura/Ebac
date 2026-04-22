@@ -8,11 +8,13 @@ import jakarta.faces.context.FacesContext;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.SessionScope;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -26,12 +28,20 @@ import java.util.List;
 @SessionScope
 public class ProdutoBean implements Serializable {
 
+    private static final int TAMANHO_PAGINA = 10;
+
     private final ProdutoService produtoService;
 
-    private List<Produto> produtos;
+    private List<Produto> produtos = Collections.emptyList();
     private Produto produtoSelecionado;
     private String termoBusca;
     private boolean modoEdicao = false;
+
+    // Paginação
+    private int paginaAtual = 0;
+    private int totalPaginas = 0;
+    private long totalRegistros = 0;
+    private boolean buscaAtiva = false;
 
     public ProdutoBean(ProdutoService produtoService) {
         this.produtoService = produtoService;
@@ -45,8 +55,46 @@ public class ProdutoBean implements Serializable {
     }
 
     public void carregarProdutos() {
-        produtos = produtoService.listarTodos();
-        log.debug("Carregados {} produtos", produtos.size());
+        buscaAtiva = false;
+        termoBusca = null;
+        paginaAtual = 0;
+        carregarPaginaAtual();
+    }
+
+    private void carregarPaginaAtual() {
+        if (buscaAtiva && termoBusca != null && !termoBusca.trim().isEmpty()) {
+            Page<Produto> page = produtoService.buscarPorNomePaginado(termoBusca.trim(), paginaAtual, TAMANHO_PAGINA);
+            produtos = page.getContent();
+            totalPaginas = page.getTotalPages();
+            totalRegistros = page.getTotalElements();
+        } else {
+            Page<Produto> page = produtoService.listarPaginado(paginaAtual, TAMANHO_PAGINA);
+            produtos = page.getContent();
+            totalPaginas = page.getTotalPages();
+            totalRegistros = page.getTotalElements();
+        }
+        log.debug("Carregados {} produtos (página {} de {})", produtos.size(), paginaAtual + 1, totalPaginas);
+    }
+
+    public void proximaPagina() {
+        if (paginaAtual < totalPaginas - 1) {
+            paginaAtual++;
+            carregarPaginaAtual();
+        }
+    }
+
+    public void paginaAnterior() {
+        if (paginaAtual > 0) {
+            paginaAtual--;
+            carregarPaginaAtual();
+        }
+    }
+
+    public void irParaPagina(int pagina) {
+        if (pagina >= 0 && pagina < totalPaginas) {
+            paginaAtual = pagina;
+            carregarPaginaAtual();
+        }
     }
 
     public void novoProduto() {
@@ -65,7 +113,7 @@ public class ProdutoBean implements Serializable {
                 produtoService.salvar(produtoSelecionado);
                 addMensagem(FacesMessage.SEVERITY_INFO, "Sucesso!", "Produto cadastrado com sucesso.");
             }
-            carregarProdutos();
+            carregarPaginaAtual();
             novoProduto();
         } catch (IllegalArgumentException e) {
             addMensagem(FacesMessage.SEVERITY_WARN, "Atenção!", e.getMessage());
@@ -91,7 +139,11 @@ public class ProdutoBean implements Serializable {
         try {
             produtoService.deletar(produto.getId());
             addMensagem(FacesMessage.SEVERITY_INFO, "Sucesso!", "Produto removido com sucesso.");
-            carregarProdutos();
+            // Se a página atual ficar vazia após deletar, voltar uma página
+            if (produtos.size() == 1 && paginaAtual > 0) {
+                paginaAtual--;
+            }
+            carregarPaginaAtual();
             novoProduto();
         } catch (Exception e) {
             log.error("Erro ao deletar produto ID: {}", produto.getId(), e);
@@ -101,15 +153,19 @@ public class ProdutoBean implements Serializable {
 
     public void buscar() {
         if (termoBusca != null && !termoBusca.trim().isEmpty()) {
-            produtos = produtoService.buscarPorNome(termoBusca.trim());
+            buscaAtiva = true;
+            paginaAtual = 0;
+            carregarPaginaAtual();
         } else {
-            carregarProdutos();
+            limparBusca();
         }
     }
 
     public void limparBusca() {
         termoBusca = null;
-        carregarProdutos();
+        buscaAtiva = false;
+        paginaAtual = 0;
+        carregarPaginaAtual();
     }
 
     public void cancelar() {
@@ -118,6 +174,18 @@ public class ProdutoBean implements Serializable {
 
     public long getTotalProdutos() {
         return produtoService.contarTotal();
+    }
+
+    public boolean isPrimeiraPagina() {
+        return paginaAtual == 0;
+    }
+
+    public boolean isUltimaPagina() {
+        return paginaAtual >= totalPaginas - 1;
+    }
+
+    public int getPaginaDisplay() {
+        return paginaAtual + 1;
     }
 
     private void addMensagem(FacesMessage.Severity severity, String summary, String detail) {

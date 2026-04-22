@@ -63,7 +63,7 @@ mvn spring-boot:run
 - **Host:** localhost:5432
 - **Banco:** produto_db
 - **Usuário:** postgres
-- **Senha:** postgres
+- **Senha:** admin
 
 O Hibernate cria a tabela `produtos` automaticamente (`ddl-auto=update`).
 

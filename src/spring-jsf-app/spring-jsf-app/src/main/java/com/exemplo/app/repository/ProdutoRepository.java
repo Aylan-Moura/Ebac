@@ -1,6 +1,8 @@
 package com.exemplo.app.repository;
 
 import com.exemplo.app.model.Produto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,6 +16,12 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 
     // Busca por nome (contém, ignorando maiúsculas/minúsculas)
     List<Produto> findByNomeContainingIgnoreCase(String nome);
+
+    // Busca por nome com paginação
+    Page<Produto> findByNomeContainingIgnoreCase(String nome, Pageable pageable);
+
+    // Busca paginada de todos os produtos
+    Page<Produto> findAll(Pageable pageable);
 
     // Busca por preço máximo
     List<Produto> findByPrecoLessThanEqual(BigDecimal precoMaximo);
