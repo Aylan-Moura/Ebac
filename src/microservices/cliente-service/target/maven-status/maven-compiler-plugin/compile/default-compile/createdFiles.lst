@@ -1,0 +1,5 @@
+com/faculdade/cliente/model/Cliente.class
+com/faculdade/cliente/repository/ClienteRepository.class
+com/faculdade/cliente/controller/ClienteController.class
+com/faculdade/cliente/service/ClienteService.class
+com/faculdade/cliente/ClienteApplication.class

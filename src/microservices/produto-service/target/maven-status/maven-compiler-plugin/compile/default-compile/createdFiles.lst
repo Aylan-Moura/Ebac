@@ -1,0 +1,5 @@
+com/faculdade/produto/repository/ProdutoRepository.class
+com/faculdade/produto/controller/ProdutoController.class
+com/faculdade/produto/model/Produto.class
+com/faculdade/produto/service/ProdutoService.class
+com/faculdade/produto/ProdutoApplication.class
