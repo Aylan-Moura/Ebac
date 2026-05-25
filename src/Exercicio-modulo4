@@ -1,0 +1,27 @@
+Exercício 1
+
+Usar nomenclatura adequada
+
+Eu acho esse princípio muito importante porque facilita bastante o entendimento do código. Quando os nomes das variáveis e métodos fazem sentido, fica muito mais fácil saber o que está acontecendo sem precisar analisar tudo detalhadamente. Além disso, ajuda outras pessoas da equipe a entenderem o sistema mais rápido.
+
+Resolver os problemas na causa raiz
+
+Resolver só o efeito do problema normalmente faz ele aparecer de novo depois. Por isso, o ideal é encontrar a verdadeira origem do erro e corrigir ela diretamente. Assim o sistema fica mais estável e evita retrabalho no futuro.
+
+Seguir a política do escoteiro
+
+Esse princípio é importante porque incentiva os desenvolvedores a sempre melhorarem o código, mesmo que seja um pouco de cada vez. Pequenas melhorias acumuladas deixam o projeto mais organizado e evitam que ele vire uma bagunça difícil de manter.
+
+Exercício 2
+
+private void somaNumeros(int a, int b, int c, int d, int e, int f)
+
+Esse método tem parâmetros demais e nomes muito genéricos. Fica difícil entender o que cada valor representa. Isso acaba prejudicando a leitura do código e a manutenção.
+
+private void oPaiTaOn()
+
+O problema aqui é o nome do método. Ele usa uma expressão informal e não explica claramente o que o método faz. Em código profissional, os nomes precisam ser objetivos e fáceis de entender.
+
+private double checaSaldoEAtualiza(long userId, double value)
+
+Esse método parece fazer duas coisas ao mesmo tempo: verificar saldo e atualizar alguma informação. Isso quebra a ideia de que um método deveria ter apenas uma responsabilidade, deixando o código mais difícil de manter e testar.
