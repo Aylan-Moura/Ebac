@@ -1,0 +1,17 @@
+Exercício 3 – Documentação de Código
+Disciplina: Especialização Backend Java – Módulo 05
+1. Documentação da Classe Calculadora
+A classe Calculadora e seus quatro métodos foram documentados utilizando o padrão Javadoc, conforme exigido pelo exercício. Cada método possui as tags @param, @return e, onde aplicável, @throws, fornecendo informações claras sobre entradas, saídas e comportamentos especiais.
+Os métodos documentados foram:
+    • adicionar(int a, int b) – retorna a soma de dois inteiros.
+    • subtrair(int a, int b) – retorna a diferença entre dois inteiros.
+    • multiplicar(int a, int b) – retorna o produto de dois inteiros.
+    • dividir(int a, int b) – retorna o quociente inteiro; lança ArithmeticException se b == 0.
+
+2. Você conseguiria entender o código sem documentá-lo?
+Sim, seria possível entender o código sem documentação. Os nomes escolhidos para os métodos e parâmetros — adicionar, subtrair, multiplicar, dividir, com parâmetros a e b — são suficientemente descritivos para comunicar a intenção de cada operação. Além disso, cada método é curto (uma ou duas linhas de lógica), não possui algoritmos complexos e segue um padrão amplamente reconhecido por qualquer desenvolvedor com conhecimento básico de Java.
+Portanto, um leitor com experiência mínima na linguagem conseguiria compreender o propósito e o funcionamento da classe apenas lendo o código, sem depender dos comentários Javadoc.
+3. Foi mesmo necessário documentar este código?
+Para a maior parte dos métodos, não foi estritamente necessário. Métodos como adicionar(int a, int b) são autoexplicativos — a documentação gerada apenas repete o que o próprio código já comunica, sem agregar informação nova.
+A única exceção é o método dividir, onde a documentação agrega valor real: a tag @throws ArithmeticException alerta o chamador de que uma exceção pode ser lançada quando o divisor é zero. Esse comportamento não é inferível apenas pelo nome do método, tornando sua documentação genuinamente útil para quem for utilizá-lo.
+Conclusão: o exercício teve grande valor pedagógico para praticar o padrão Javadoc. No entanto, em um projeto real, seguiríamos a boa prática de documentar apenas o que o código não comunica sozinho — especialmente comportamentos não óbvios, exceções e contratos de uso. Código claro e bem nomeado é, em si, a melhor forma de documentação.
