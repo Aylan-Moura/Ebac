@@ -1,0 +1,43 @@
+Exercício 1: Escalabilidade
+
+
+A principal diferença entre as duas arquiteturas nesse cenário está na granularidade do processo. Quando usamos um **monólito**, o sistema inteiro está acoplado em um único bloco (ou pacote de deploy). Se um módulo específico — como o sistema de pagamentos durante uma Black Friday — sofre um pico massivo de acessos, a única forma de escalar é replicar o monólito inteiro. Isso significa colocar várias instâncias de código ocioso (como o módulo de "fale conosco" ou "perfil do usuário") para rodar em paralelo, o que gera um desperdício enorme de memória, CPU e dinheiro de infraestrutura.
+
+Já no modelo de **microsserviços**, cada componente de negócio é um processo independente. Se o serviço de pagamentos estiver sobrecarregado, conseguimos escalar horizontalmente apenas ele (criando mais pods ou instâncias dele através de um orquestrador como o Kubernetes). O restante do ecossistema continua rodando com a sua capacidade normal. O ganho aqui é a eficiência e a otimização de custos, escalando estritamente o que precisa ser escalado.
+
+
+
+Exercício 2: Disponibilidade e Isolamento de Falhas
+
+
+
+No **monólito**, o isolamento de falhas é praticamente inexistente porque todos os componentes compartilham o mesmo processo e o mesmo espaço de memória na aplicação. Se houver um bug grave, como uma falha de estouro de memória (*OutOfMemoryError*) ou um loop infinito em uma funcionalidade secundária (por exemplo, um gerador de relatórios em PDF), o processo inteiro do servidor cai. Como consequência, o sistema todo fica indisponível: o usuário não consegue comprar, logar ou fazer nada na plataforma só porque o gerador de relatórios quebrou. É o clássico "ponto único de falha".
+
+Com **microsserviços**, o cenário muda devido ao isolamento de processos. Como o gerador de relatórios roda em um container separado, se ele falhar ou cair por falta de memória, apenas aquela funcionalidade fica indisponível para o usuário. O fluxo principal da aplicação (fazer buscas, adicionar produtos ao carrinho e fechar a compra) continua funcionando perfeitamente. No máximo, o usuário verá um aviso amigável dizendo que os relatórios estão temporariamente fora do ar, o que caracteriza uma degradação graciosa do sistema.
+
+
+
+Exercício 3: Consistência de Dados
+
+
+A gestão de consistência é um dos pontos onde o monólito costuma levar vantagem pela simplicidade. Como a maioria dos **monólitos** se conecta a um único banco de dados relacional centralizado, conseguimos garantir uma consistência forte através de transações **ACID**. Se precisarmos dar baixa no estoque e criar um pedido ao mesmo tempo, fazemos isso dentro da mesma transação do banco. Se a criação do pedido falhar por qualquer motivo, o próprio banco dá um *rollback* e garante que o estoque não fique inconsistente. Tudo acontece de forma imediata e atômica.
+
+Em **microsserviços**, cada serviço tem seu próprio banco de dados independente (*Database-per-Service*), o que impede o uso de transações ACID tradicionais entre eles. Se o serviço de pedidos precisar atualizar o serviço de estoque, a comunicação é feita via rede. Para lidar com isso, precisamos trabalhar com o conceito de **Consistência Eventual** e implementar padrões de design complexos, como o **Padrão Saga**. Se o pagamento falhar no meio do caminho, precisamos disparar manualmente eventos de compensação para devolver o item ao estoque. Dá muito mais trabalho para programar e testar.
+
+---
+
+Exercício 4: Performance e Latência
+
+
+Em termos de latência pura em uma única requisição, o **monólito** costuma ser imbatível. A comunicação entre os diferentes módulos do sistema acontece diretamente na memória da máquina (*in-memory function calls*). Chamar uma função de outro módulo leva nanossegundos ou microssegundos, sem nenhum tipo de barreira física ou necessidade de processamento extra.
+
+No caso dos **microsserviços**, a comunicação deixa de ser local e passa a ser distribuída, ocorrendo através da rede (seja por requisições HTTP/REST, gRPC ou mensageria). Cada uma dessas chamadas adiciona o que chamamos de *network hop* (salto de rede), trazendo milissegundos de latência à operação. Além disso, existe o custo computacional de transformar os dados do objeto em JSON (serialização) para enviar pela rede e depois transformá-los de volta (deserialização). O sistema pode até aguentar mais acessos simultâneos no total, mas rotas que dependem de muitos serviços encadeados vão ficar visivelmente mais lentas.
+
+
+
+Exercício 5: Testabilidade e Deploy
+
+
+A dinâmica de testes e deploy inverte as vantagens entre os dois modelos. No **monólito**, testar um fluxo de ponta a ponta (End-to-End) é muito mais tranquilo. Você consegue rodar a aplicação inteira na sua máquina local, apontar para um banco de testes e validar o fluxo completo do usuário sem depender de nada externo. Porém, o deploy é engessado: se você corrigir um erro de digitação em uma tela, precisa gerar o pacote completo da aplicação inteira, rodar todos os testes novamente e fazer o deploy de tudo, o que aumenta o risco e exige janelas de manutenção coordenadas.
+
+Nos **microsserviços**, o deploy é absurdamente ágil e independente. Cada serviço tem sua própria esteira de CI/CD, permitindo colocar atualizações em produção de forma isolada em minutos, sem afetar ninguém. Em contrapartida, os testes integrados viram um desafio enorme. É muito difícil simular o ecossistema completo localmente, o que exige criar infraestruturas complexas de *mocks*, ambientes de *staging* robustos e investir pesado em **Testes de Contrato** para garantir que a alteração na API de um serviço não quebre os outros que dependem dele.
