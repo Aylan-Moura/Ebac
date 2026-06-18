@@ -1,0 +1,41 @@
+Resoluções dos Exercícios - Módulo 07
+Exercício 1 – Contêineres e Microsserviços
+1. Qual é a diferença entre contêineres e microsserviços?
+
+A diferença principal é que microsserviços são um modelo de arquitetura de software, enquanto contêineres são uma tecnologia de infraestrutura que ajuda a rodar e empacotar esse software.
+
+    Microsserviços: É a estratégia de quebrar um sistema grande e complexo em vários pedaços menores e independentes (ex: um serviço só para pagamentos, outro só para carrinho de compras). Cada um cuida de uma única regra de negócio.
+
+    Contêineres: É como uma "caixinha" virtualizada (como o Docker) onde você coloca o seu código e tudo que ele precisa para funcionar (bibliotecas, configurações). Ele garante que o sistema rode do mesmo jeito no seu computador, no servidor de testes ou na nuvem.
+
+O microsserviço é o que você constrói (a lógica da aplicação); o contêiner é onde você guarda e roda essa aplicação de forma isolada e segura.
+
+2. Extra: É possível subir microsserviços em uma máquina virtual? Justifique.
+
+Sim, é perfeitamente possível. Um microsserviço nada mais é do que um programa executável. Você pode ligar uma Máquina Virtual (VM) convencional, instalar o sistema operacional (como Linux ou Windows), instalar o Java (ou outra tecnologia utilizada) e rodar o seu microsserviço lá dentro de forma direta.
+
+Embora o uso de contêineres seja muito mais comum e eficiente hoje em dia por serem mais leves, as VMs também dão conta do recado e foram muito utilizadas para isso antes da popularização do Docker.
+Exercício 2 – Integração Contínua (CI)
+Por que os desenvolvedores precisam fazer merge frequente de suas mudanças de código?
+
+A Integração Contínua se baseia na ideia de testar e juntar o trabalho de todo mundo o tempo todo para evitar surpresas.
+
+Se um desenvolvedor passa semanas trabalhando isolado em um código sem fazer o merge, quando ele finalmente tentar juntar o trabalho dele com o do resto da equipe, vai se deparar com o famoso "Inferno do Merge" (Merge Hell). O código principal já mudou tanto nesse tempo que resolver os conflitos vai ser um processo demorado, doloroso e muito propenso a gerar novos bugs.
+
+Fazer merges frequentes (pelo menos uma vez ao dia) garante que os conflitos sejam pequenos, fáceis de resolver e que a equipe sempre saiba se o sistema continua funcionando como um todo.
+
+Exercício 3 – Entrega Contínua (CD)
+Por que é necessário ter uma cobertura abrangente de testes para que a prática de entrega contínua funcione?
+
+Na Entrega Contínua, o objetivo é fazer com que qualquer alteração de código aprovada esteja pronta para ir para o ambiente de produção (para o cliente final) de forma rápida e segura.
+
+Como esse processo avança quase sem interferência humana, os testes automatizados são a única linha de defesa do sistema. Sem uma cobertura de testes robusta e abrangente (testes unitários, de integração, etc.), a equipe não teria confiança para subir o código. Um bug grave passaria direto e quebraria o sistema de produção sem que ninguém percebesse antes do deploy. Os testes servem como o selo de garantia automatizado de que aquela alteração é segura.
+
+Exercício 4 – Implantação Contínua (Continuous Deployment)
+Quais as diferenças entre Entrega Contínua (Continuous Delivery) e Implantação Contínua (Continuous Deployment)?
+
+Embora as duas siglas usem "CD", o ponto de virada entre elas está na automação do último passo (a liberação para o cliente).
+
+Entrega Contínua (Continuous Delivery): O código passa por todos os testes automáticos e fica em um estado "pronto para ir ao ar". Porém, a decisão de colocar o sistema no ar para o usuário final depende de um gatilho manual (um clique de um diretor, ou uma decisão de negócios da empresa).
+
+Implantação Contínua (Continuous Deployment): O processo é 100% automatizado. Se o desenvolvedor enviou o código e ele passou em absolutamente todos os testes automáticos, o próprio sistema se encarrega de publicar a alteração direto para o usuário final em produção, sem nenhuma intervenção ou aprovação humana.
