@@ -1,0 +1,38 @@
+
+
+ Exercício 1 - Os 12 Fatores (The Twelve-Factor App)
+
+A metodologia dos 12 Fatores é uma coleção de boas práticas projetada para criar aplicações modernas, escaláveis e prontas para a nuvem. Abaixo, destacamos três fatores fundamentais para o sucesso de uma arquitetura de microsserviços:
+
+ 1. Fator III: Configurações (Config)
+O que diz o fator:** Armazenar as configurações da aplicação (credenciais de banco de dados, URLs de serviços externos, chaves de API) estritamente no ambiente (variáveis de ambiente), e nunca hardcoded no código-fonte.
+Importância para Microsserviços:** Em um ecossistema com dezenas ou centenas de microsserviços, o mesmo código precisa rodar de forma idêntica em Desenvolvimento, Homologação e Produção. Isolar a configuração permite que o serviço seja portável. Se você precisar mudar o banco de dados de produção, basta alterar uma variável de ambiente no container, sem a necessidade de recompilar ou gerar uma nova build do microsserviço.
+
+ 2. Fator VI: Processos (Processes)
+O que diz o fator:** Executar a aplicação como um ou mais processos que não guardam estado (stateless) e que não compartilham nada (share-nothing). Qualquer dado que precise persistir deve ser armazenado em um serviço de suporte (banco de dados, cache, etc.).
+Importância para Microsserviços:** Microsserviços precisam ser altamente escaláveis. Se um serviço é *stateless*, podemos criar 10 ou 20 instâncias dele em paralelo para aguentar um pico de acessos. O balanceador de carga pode enviar requisições para qualquer uma dessas instâncias sem medo de que o usuário "perca" a sessão ou dê um erro na operação.
+
+ 3. Fator X: Paridade entre Desenvolvimento e Produção (Dev/prod parity)
+O que diz o fator:** Manter os ambientes de desenvolvimento, homologação e produção o mais semelhantes possível, reduzindo o tempo entre o desenvolvimento do código e o deploy real.
+Importância para Microsserviços:** Em arquiteturas distribuídas, encontrar um erro em produção gerado por uma diferença de ambiente (ex: usar banco H2 local e PostgreSQL em produção) é extremamente complexo de rastrear. Usar containers (como Docker) para garantir que o desenvolvedor rode localmente exatamente os mesmos componentes e versões de infraestrutura que estão em produção minimiza os famosos erros do tipo *"na minha máquina funciona"*.
+
+
+
+Exercício 2 - CI/CD e Serviços Sem Estado (Stateless)
+
+Por que é importante desenvolver microsserviços sem estado (stateless)?
+Desenvolver microsserviços *stateless* significa que cada requisição feita ao serviço é totalmente independente da anterior. O serviço processa a informação com o que recebe na hora (e buscando dados externos se necessário), mas ele próprio não retém memória do histórico do usuário em seu disco ou memória local.
+
+Isso é crucial porque nos dá **elasticidade**. Se o volume de requisições triplica, a infraestrutura (como Kubernetes) pode criar novas réplicas desse microsserviço instantaneamente. Como nenhuma réplica guarda estado, o tráfego pode ser distribuído uniformemente entre elas.
+
+ Qual a influência direta nos mecanismos de CI/CD?
+Os pipelines de Integração e Entrega Contínua (CI/CD) dependem de automação total e velocidade. 
+Deploys sem atrito:** Quando um microsserviço é *stateless*, o CI/CD pode simplesmente destruir a versão antiga e subir a versão nova (estratégias como *Rolling Updates* ou *Blue/Green Deployment*) sem medo de interromper a experiência do usuário. 
+Automação pura:** O pipeline não precisa se preocupar em migrar sessões ativas de memória ou sincronizar arquivos locais entre o container velho e o novo. O processo se torna previsível e seguro.
+
+ O que acontece se um serviço tiver estado (stateful) e tivermos que matar uma de suas instâncias em produção?
+Se uma instância de um serviço *stateful* (que guarda estado localmente, como uma sessão de login na memória RAM ou um arquivo temporário no disco rígido do container) for derrubada em produção, as consequências são imediatas e negativas:
+
+1.  Queda de sessão (Logouts abruptos):** Todos os usuários cujas sessões estavam salvas na memória daquela instância específica serão deslogados repentinamente ou perderão o progresso de seus carrinhos de compras/fluxos.
+2.  Inconsistência e perda de dados:** Se o estado guardava um processamento temporário ou um arquivo carregado que ainda não tinha sido salvo em um banco central, esses dados serão perdidos para sempre quando o container for destruído.
+3.  Travamento do CI/CD:** O processo de deploy contínuo ficaria engessado. Não seria possível fazer atualizações automáticas no meio do dia, pois derrubar as instâncias para atualizar o sistema significaria derrubar a experiência dos usuários conectados naquele momento.
