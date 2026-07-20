@@ -1,0 +1,25 @@
+Exercício 1 – Consistência Forte vs. Consistência Eventual
+
+Consistência Forte: É o famoso "bateu, levou". Se você altera uma informação agora, qualquer pessoa que olhar pro sistema um milissegundo depois vai ver o dado atualizado. Não tem meio termo.
+Onde usar: No seu saldo do banco. Se você tem R$ 50 e saca R$ 50 no caixa eletrônico, o aplicativo do celular tem que mostrar R$ 0 na mesma hora. Se demorasse para atualizar, você poderia sacar o mesmo dinheiro duas vezes.
+
+Consistência Eventual: É o famoso "daqui a pouco todo mundo fica sabendo". Quando você muda algo, o sistema prioriza a velocidade e aceita que alguns usuários demorem um pouquinho para ver a atualização. Mas fique tranquilo: uma hora a informação chega para todo mundo.
+Onde usar: Na contagem de curtidas do Instagram. Se uma celebridade posta uma foto, o contador de curtidas não precisa ser idêntico no mundo todo ao mesmo tempo. Se para você aparece 1.000 curtidas e para um amigo seu aparece 1.002, ninguém vai morrer por isso. Em poucos segundos as telas se sincronizam.
+
+Exercício 2 – Filas e Eventos (Dados vs. Aplicação)
+
+Eventos de Dados: É quando o foco está na tabela do banco de dados. O evento avisa puramente que uma linha mudou. Ele costuma dizer algo frio como: "A linha 45 da tabela de clientes mudou o campo 'status' de 'pendente' para 'ativo'".
+Quando usar: Quando você só precisa fazer uma cópia dos dados ou sincronizar ferramentas técnicas. Por exemplo, sempre que entrar um cliente novo no banco de dados principal, você dispara esse evento para atualizar o sistema de relatórios ou o motor de busca do site.
+
+Eventos de Aplicação: É quando o foco está nas regras do negócio, usando palavras que o cliente entende. Ele não liga para tabelas, ele avisa um fato real: "O cliente XPTO acabou de confirmar o pagamento!".
+Quando usar: Para fazer a engrenagem da empresa girar e conversar entre diferentes equipes (ou microsserviços). Assim que o evento "Pagamento Confirmado" acontece, ele avisa o estoque para embrulhar o produto, a logística para criar a etiqueta de envio e o setor de e-mail para mandar o comprovante para o cliente. Tudo no piloto automático.
+
+Exercício 3 – Observabilidade (Como saber se o seu microsserviço está bem?)
+
+Imagine que o seu microsserviço é um restaurante. Para saber se ele está funcionando bem, você precisa olhar para três coisas principais (que no mundo dev chamamos de padrão RED):
+
+Taxa de Requisições (Rate): É o movimento da casa. Quantas pessoas estão entrando por segundo? É importante monitorar porque, se o restaurante lotar de uma hora para outra, você precisa colocar mais cozinheiros (ou mais servidores) para aguentar o tranco.
+
+Taxa de Erros (Errors): É a comida que voltou estragada ou errada. Se os clientes começarem a reclamar muito (o sistema começar a dar erro 500), é o sinal vermelho de que alguma receita que você acabou de mudar na cozinha deu muito errado e precisa ser consertada urgente.
+
+Duração/Latência (Duration): É o tempo de espera do cliente. Se o garçom anota o pedido sem erros, mas a comida demora 2 horas para chegar na mesa, o cliente vai embora frustrado do mesmo jeito. Medir o tempo de resposta garante que o seu sistema continue rápido e agradável.
