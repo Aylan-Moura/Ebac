@@ -1,0 +1,555 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Diagrama de Arquitetura (Estilo Excalidraw) - Encurtador de URLs</title><!-- Google Fonts for Excalidraw handwritten look --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap"
+
+rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"><!-- Rough.js for authentic sketchy Excalidraw drawings --><script src="https://cdn.jsdelivr.net/npm/roughjs@4.5.2/bundled/rough.js"></script><style> :root {
+    --canvas-bg: #f8f9fa;
+    --grid-color: #e2e8f0;
+    --stroke-main: #1e293b;
+    --stroke-blue: #0284c7;
+    --stroke-green: #16a34a;
+    --stroke-purple: #9333ea;
+    --stroke-amber: #d97706;
+    --stroke-rose: #e11d48;
+    --fill-yellow: #fef08a;
+    --fill-blue: #e0f2fe;
+    --fill-green: #dcfce7;
+    --fill-purple: #f3e8ff;
+    --fill-orange: #ffedd5;
+    --font-sketch: 'Kalam', cursive, sans-serif;
+    --font-sans: 'Plus Jakarta Sans', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--canvas-bg);
+    background-image: radial-gradient(var(--grid-color) 1.5px, transparent 1.5px);
+    background-size: 24px 24px;
+    font-family: var(--font-sketch);
+    color: var(--stroke-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    user-select: none;
+}
+
+/* HEADER / TOOLBAR */
+header {
+    background: #ffffff;
+    border-bottom: 2px solid #cbd5e1;
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    z-index: 100;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-icon {
+    font-size: 24px;
+    color: var(--stroke-blue);
+    background: var(--fill-blue);
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: 2px solid var(--stroke-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.title-text h1 {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.title-text p {
+    font-size: 14px;
+    color: #64748b;
+    font-family: var(--font-sans);
+}
+
+/* EXCALIDRAW TOOLBAR CONTROLS */
+.controls-bar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    background: #ffffff;
+    padding: 6px;
+    border: 2px solid #94a3b8;
+    border-radius: 12px;
+    box-shadow: 2px 3px 0px #94a3b8;
+}
+
+.btn-flow {
+    font-family: var(--font-sketch);
+    font-size: 16px;
+    font-weight: 700;
+    background: #f1f5f9;
+    border: 2px solid #64748b;
+    padding: 6px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #334155;
+}
+
+.btn-flow:hover {
+    transform: translateY(-2px);
+    box-shadow: 2px 2px 0px #64748b;
+    background: #ffffff;
+}
+
+.btn-flow.active {
+    background: var(--fill-yellow);
+    border-color: #b45309;
+    color: #78350f;
+    box-shadow: 2px 2px 0px #b45309;
+}
+
+/* WORKSPACE & CANVAS LAYOUT */
+.workspace {
+    display: flex;
+    flex: 1;
+    position: relative;
+    height: calc(100vh - 75px);
+}
+
+.diagram-area {
+    flex: 1;
+    position: relative;
+    overflow: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+}
+
+/* SVG ROUGH CANVAS OVERLAY */
+#roughSvg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* DIAGRAM NODES CONTAINER */
+.nodes-grid {
+    position: relative;
+    width: 1100px;
+    height: 620px;
+    z-index: 20;
+}
+
+/* INDIVIDUAL EXCALIDRAW SKETCH NODE */
+.sketch-node {
+    position: absolute;
+    background: #ffffff;
+    border: 2px solid var(--stroke-main);
+    border-radius: 12px;
+    padding: 14px;
+    width: 190px;
+    box-shadow: 3px 4px 0px var(--stroke-main);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sketch-node:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 6px 0px var(--stroke-main);
+}
+
+.sketch-node.highlighted {
+    background: var(--fill-yellow) !important;
+    border-color: #b45309 !important;
+    box-shadow: 4px 6px 0px #b45309 !important;
+    animation: bounce 0.6s infinite alternate;
+}
+
+@keyframes bounce {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(-6px);
+    }
+}
+
+.node-icon-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.node-icon-header i {
+    font-size: 20px;
+}
+
+.node-title {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.node-tech {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.node-desc {
+    font-size: 13px;
+    line-height: 1.2;
+    color: #334155;
+}
+
+/* POST-IT STICKY NOTES FOR REQUIREMENTS */
+.sticky-note {
+    position: absolute;
+    width: 210px;
+    padding: 14px;
+    font-size: 14px;
+    line-height: 1.3;
+    box-shadow: 3px 4px 0px rgba(0, 0, 0, 0.15);
+    transform: rotate(-2deg);
+    z-index: 25;
+    border: 2px solid #eab308;
+    background: #fef9c3;
+}
+
+.sticky-note.green {
+    background: #dcfce7;
+    border-color: #22c55e;
+    transform: rotate(2deg);
+}
+
+.sticky-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* SIDE INSPECTOR PANEL */
+.inspector-panel {
+    width: 320px;
+    background: #ffffff;
+    border-left: 2px solid #cbd5e1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.03);
+    z-index: 30;
+}
+
+.inspector-card {
+    background: #f8fafc;
+    border: 2px dashed #94a3b8;
+    border-radius: 10px;
+    padding: 14px;
+}
+
+.inspector-card h3 {
+    font-size: 18px;
+    color: #0f172a;
+    margin-bottom: 6px;
+}
+
+.inspector-card p {
+    font-size: 14px;
+    color: #475569;
+    line-height: 1.3;
+}
+
+.step-banner {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ffffff;
+    border: 2px solid var(--stroke-main);
+    box-shadow: 4px 4px 0px var(--stroke-main);
+    border-radius: 30px;
+    padding: 8px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 40;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.step-num {
+    background: var(--fill-yellow);
+    border: 2px solid var(--stroke-main);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* RESPONSIVE BREAKPOINTS */
+@media (max-width: 1024px) {
+    .inspector-panel {
+        display: none;
+    }
+
+    .nodes-grid {
+        transform: scale(0.85);
+        transform-origin: top center;
+    }
+}
+
+</style></head><body><!-- HEADER / TOOLBAR --><header><div class="logo-area"><div class="logo-icon"><i class="fa-solid fa-pencil"></i></div><div class="title-text"><h1>Encurtador de URLs • Excalidraw Diagram</h1><p>Desenho de Arquitetura de Sistemas (Exercício M14)</p></div></div><div class="controls-bar"><span style="font-size: 14px; font-weight: 700; margin-right: 4px;">Modo:</span><button class="btn-flow active" onclick="setFlow('overview')"><i class="fa-solid fa-eye"></i>Visão Geral </button><button class="btn-flow" onclick="setFlow('write')"><i class="fa-solid fa-plus-circle"></i>1. Criar URL (Escrita) </button><button class="btn-flow" onclick="setFlow('read')"><i class="fa-solid fa-arrow-right-to-bracket"></i>2. Redirecionar (Leitura) </button><button class="btn-flow" onclick="setFlow('kgs')"><i class="fa-solid fa-key"></i>3. KGS (Sem Colisão) </button></div></header><div class="workspace"><div class="diagram-area"><!-- SVG ROUGH.JS OVERLAY FOR HAND-DRAWN ARROWS --><svg id="roughSvg"></svg><!-- NODES GRID LAYOUT --><div class="nodes-grid" id="nodesGrid"><!-- STICKY NOTES (REQUIREMENTS) --><div class="sticky-note" style="top: -10px; left: 10px;"><div class="sticky-title"><i class="fa-solid fa-check"></i>Requisito 1</div>Suporta URLs de <strong>qualquer tamanho</strong>sem limites na entrada do sistema. </div><div class="sticky-note green" style="top: -10px; right: 10px;"><div class="sticky-title"><i class="fa-solid fa-shield-halved"></i>Requisito 2</div><strong>Zero Colisão:</strong>O KGS pré-gera chaves Base62 (7 chars=3.5 Trilhões) em memória. </div><!-- ROW 1: CLIENT & GATEWAY --><div class="sketch-node" id="node-client" style="top: 130px; left: 40px; background: var(--fill-blue);"
+onclick="inspect('client')"><div class="node-icon-header"><i class="fa-solid fa-laptop" style="color: var(--stroke-blue);"></i><div class="node-title">Cliente / App</div></div><div class="node-tech">Navegador / Mobile</div><div class="node-desc">Envia URL longa ou clica no link curto.</div></div><div class="sketch-node" id="node-lb" style="top: 130px; left: 320px; background: var(--fill-orange);"
+onclick="inspect('lb')"><div class="node-icon-header"><i class="fa-solid fa-network-wired" style="color: var(--stroke-amber);"></i><div class="node-title">Load Balancer</div></div><div class="node-tech">NGINX / AWS ALB</div><div class="node-desc">Distribui requisições em alta escala.</div></div><div class="sketch-node" id="node-api" style="top: 130px; left: 600px; background: var(--fill-purple);"
+onclick="inspect('api')"><div class="node-icon-header"><i class="fa-solid fa-cubes" style="color: var(--stroke-purple);"></i><div class="node-title">API Shortener</div></div><div class="node-tech">Spring Boot Cluster</div><div class="node-desc">Recebe chamadas e coordena o fluxo.</div></div><!-- ROW 2: CORE SERVICES & STORAGE --><div class="sketch-node" id="node-kgs" style="top: 380px; left: 320px; background: var(--fill-green);"
+onclick="inspect('kgs')"><div class="node-icon-header"><i class="fa-solid fa-key" style="color: var(--stroke-green);"></i><div class="node-title">KGS Engine</div></div><div class="node-tech">Key Generation Service</div><div class="node-desc">Pré-gera chaves únicas em RAM.</div></div><div class="sketch-node" id="node-redis" style="top: 380px; left: 600px; background: #ffe4e6;"
+onclick="inspect('redis')"><div class="node-icon-header"><i class="fa-solid fa-bolt" style="color: var(--stroke-rose);"></i><div class="node-title">Cache Redis</div></div><div class="node-tech">In-Memory Cluster</div><div class="node-desc">Mapeia busca em &lt;
+2ms de latência.</div></div><div class="sketch-node" id="node-db" style="top: 380px; left: 870px; background: var(--fill-blue);"
+onclick="inspect('db')"><div class="node-icon-header"><i class="fa-solid fa-database" style="color: var(--stroke-blue);"></i><div class="node-title">NoSQL DB</div></div><div class="node-tech">DynamoDB / Cassandra</div><div class="node-desc">Persistência permanente indexada.</div></div><div class="sketch-node" id="node-kafka" style="top: 130px; left: 870px; background: #f1f5f9;"
+
+onclick="inspect('kafka')"><div class="node-icon-header"><i class="fa-solid fa-chart-line" style="color: #475569;"></i><div class="node-title">Kafka / Analytics</div></div><div class="node-tech">Fila Assíncrona</div><div class="node-desc">Contagem de cliques e métricas.</div></div></div><!-- STEP BANNER --><div class="step-banner" id="stepBanner" style="display: none;"><div class="step-num" id="stepNum">1</div><div id="stepText">Selecione um fluxo acima para simular a requisição.</div></div></div><!-- SIDE INSPECTOR PANEL --><div class="inspector-panel"><h2 style="font-size: 20px; border-bottom: 2px solid #cbd5e1; padding-bottom: 8px;"><i class="fa-solid fa-circle-info"></i>Detalhes do Componente </h2><div class="inspector-card"><h3 id="inspectTitle">API Encurtador</h3><p id="inspectDesc">Selecione qualquer elemento no diagrama no estilo Excalidraw para ver seus detalhes de arquitetura.</p></div><div class="inspector-card" style="background: var(--fill-yellow); border-color: #eab308;"><h3><i class="fa-solid fa-lightbulb"></i>Conceito Chave</h3><p>O uso do <strong>Key Generation Service (KGS)</strong>elimina concorrência e trava de banco de dados,
+entregando chaves únicas de 7 caracteres com alta performance.</p></div></div></div><script>const nodeDetails= {
+    client: {
+        title: "Cliente / App Browser", desc: "Origem da requisição HTTP. Envia URLs de qualquer tamanho no POST ou acessa a URL curta no GET."
+    }
+
+    ,
+    lb: {
+        title: "Load Balancer (NGINX / ALB)", desc: "Distribui o tráfego de entrada entre os múltiplos nós da API stateless para suportar milhares de acessos."
+    }
+
+    ,
+    api: {
+        title: "API Encurtador (Spring Boot)", desc: "Recebe o pedido de encurtamento, pega uma chave pronta do KGS e grava no Banco/Cache. Na leitura, faz o redirect 302."
+    }
+
+    ,
+    kgs: {
+        title: "KGS (Key Generation Service)", desc: "Serviço dedicado que pré-gera chaves Base62 offline e mantém um buffer em memória RAM. Zero risco de colisão!"
+    }
+
+    ,
+    redis: {
+        title: "Redis Cache Cluster", desc: "Armazena as URLs mais acessadas em memória RAM (regra Pareto 80/20), respondendo em menos de 2 milissegundos."
+    }
+
+    ,
+    db: {
+        title: "NoSQL DB (DynamoDB / Cassandra)", desc: "Banco chave-valor de altíssima velocidade. Guarda a relação permanente entre o shortCode de 7 caracteres e a URL original."
+    }
+
+    ,
+    kafka: {
+        title: "Kafka & Analytics Workers", desc: "Processa contagem de cliques e dados estatísticos de forma assíncrona, sem desacelerar a resposta para o usuário."
+    }
+}
+
+;
+
+function inspect(key) {
+    const data=nodeDetails[key];
+    if ( !data) return;
+    document.getElementById('inspectTitle').innerText=data.title;
+    document.getElementById('inspectDesc').innerText=data.desc;
+}
+
+function drawRoughConnections() {
+    const svg=document.getElementById('roughSvg');
+    svg.innerHTML=''; // Clear existing lines
+
+    const rc=rough.svg(svg);
+
+    // Connections list: [fromNodeId, toNodeId, color]
+    const connections=[ ['client',
+    'lb',
+    '#0284c7'],
+    ['lb',
+    'api',
+    '#d97706'],
+    ['api',
+    'kgs',
+    '#16a34a'],
+    ['api',
+    'redis',
+    '#e11d48'],
+    ['api',
+    'db',
+    '#0284c7'],
+    ['api',
+    'kafka',
+    '#64748b']];
+
+    const grid=document.getElementById('nodesGrid').getBoundingClientRect();
+    const svgRect=svg.getBoundingClientRect();
+
+    connections.forEach(([from, to, color])=> {
+            const elFrom=document.getElementById(`node-${from}`);
+
+            const elTo=document.getElementById(`node-${to}`);
+
+            if ( !elFrom || !elTo) return;
+
+            const r1=elFrom.getBoundingClientRect();
+            const r2=elTo.getBoundingClientRect();
+
+            // Calculate center points relative to SVG
+            const x1=r1.left + r1.width / 2 - svgRect.left;
+            const y1=r1.top + r1.height / 2 - svgRect.top;
+            const x2=r2.left + r2.width / 2 - svgRect.left;
+            const y2=r2.top + r2.height / 2 - svgRect.top;
+
+            // Draw sketchy line
+            const line=rc.line(x1, y1, x2, y2, {
+                stroke: color,
+                strokeWidth: 2.5,
+                roughness: 1.5,
+                bowing: 1.2
+            });
+        svg.appendChild(line);
+    });
+}
+
+const flows= {
+    overview: [ {
+        num: "•", text: "Visão Geral: Todos os componentes conectados em estilo Excalidraw."
+    }
+
+    ],
+    write: [ {
+        nodes: ["client", "lb", "api"], text: "1. Cliente envia HTTP POST com a URL longa para o Load Balancer."
+    }
+
+    ,
+    {
+    nodes: ["api", "kgs"], text: "2. API busca instantaneamente uma nova chave única no buffer do KGS."
+}
+
+,
+{
+nodes: ["api", "db", "redis"], text: "3. API grava no NoSQL DB e popula o Redis Cache."
+}
+
+,
+{
+nodes: ["api", "client"], text: "4. Retorna a URL curta única para o cliente."
+}
+
+],
+read: [ {
+    nodes: ["client", "lb", "api"], text: "1. Usuário acessa o link encurtado e chega à API."
+}
+
+,
+{
+nodes: ["api", "redis"], text: "2. API consulta o Redis Cache em <2ms (Cache Hit)."
+}
+
+,
+{
+nodes: ["api", "kafka"], text: "3. Envia evento de clique assíncrono para o Kafka."
+}
+
+,
+{
+nodes: ["api", "client"], text: "4. Retorna HTTP 302 redirecionando para a URL Original."
+}
+
+],
+kgs: [ {
+    nodes: ["kgs"], text: "1. O KGS gera offline chaves Base62 de 7 caracteres (62^7 = 3.5 Trilhões)."
+}
+
+,
+{
+nodes: ["kgs", "api"], text: "2. Mantém chaves na RAM para entrega imediata sem consulta prévia ao banco."
+}
+
+]
+}
+
+;
+
+let currentFlow='overview';
+let stepIdx=0;
+let timer=null;
+
+function setFlow(flowKey) {
+    currentFlow=flowKey;
+    stepIdx=0;
+    clearInterval(timer);
+
+    document.querySelectorAll('.btn-flow').forEach(b=> b.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+
+    document.querySelectorAll('.sketch-node').forEach(n=> n.classList.remove('highlighted'));
+
+    const banner=document.getElementById('stepBanner');
+
+    if (flowKey==='overview') {
+        banner.style.display='none';
+        inspect('api');
+        return;
+    }
+
+    banner.style.display='flex';
+    nextStep();
+    timer=setInterval(nextStep, 3500);
+}
+
+function nextStep() {
+    const steps=flows[currentFlow];
+    if ( !steps) return;
+
+    const current=steps[stepIdx];
+    document.querySelectorAll('.sketch-node').forEach(n=> n.classList.remove('highlighted'));
+
+    document.getElementById('stepNum').innerText=stepIdx+1;
+    document.getElementById('stepText').innerText=current.text;
+
+    if (current.nodes) {
+        current.nodes.forEach(id=> {
+                const el=document.getElementById(`node-${id}`);
+                if (el) el.classList.add('highlighted');
+            });
+        inspect(current.nodes[0]);
+    }
+
+    stepIdx=(stepIdx + 1) % steps.length;
+}
+
+window.addEventListener('load', ()=> {
+        drawRoughConnections();
+        inspect('api');
+    });
+
+window.addEventListener('resize', drawRoughConnections);
+</script></body></html>
